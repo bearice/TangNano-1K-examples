@@ -7,55 +7,55 @@ module led (
 );
 
 reg [31:0] counter;
-//reg [25:0] counter;
-reg [7:0] max;
-reg [7:0] red;
-reg [7:0] blue;
-reg [7:0] green;
+wire [7:0] r;
+wire [7:0] g;
+wire [7:0] b;
+reg [7:0] h;
+wire [7:0] s = 255;
+wire [7:0] v = 255;
+wire [7:0] max = 255;
 
 always @(posedge sys_clk or negedge sys_rst_n) begin
     if (!sys_rst_n) begin
         counter <= 0;
-        max <= 255;
-        red <= 100;
-        blue <= 100;
-        green <= 100;
+        h <= 0;
     end
-    else if (counter < 31'd1350_000)       // 0.05s delay
+    else if (counter < 31'd1350_00)       // 0.005s delay
         counter <= counter + 1;
     else begin
         counter <= 0;
-        red <= red+1;
-        blue <= blue+2;
-        green <= green+3;
+        h <= h+1;
     end
 end
 
-pwm pwm_red(
+hsv2rgb (
+    .r(r), .g(g), .b(b),
+    .h(h), .s(s), .v(v)
+);
+
+pwm #(8) pwm_r (
     .clk (sys_clk),
     .reset (sys_rst_n),
-    .threshold (red),
+    .threshold (r),
     .max (max),
     .pwm (LED_R)
 );
 
-pwm pwm_green(
+pwm #(8) pwm_g(
     .clk (sys_clk),
     .reset (sys_rst_n),
-    .threshold (blue),
+    .threshold (g),
     .max (max),
     .pwm (LED_G)
 );
 
-pwm pwm_blue(
+pwm #(8) pwm_b(
     .clk (sys_clk),
     .reset (sys_rst_n),
-    .threshold (green),
+    .threshold (b),
     .max (max),
     .pwm (LED_B)
 );
-
-//assign LED_B = blue[4];
 
 endmodule
 

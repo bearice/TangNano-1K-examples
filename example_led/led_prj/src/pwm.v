@@ -1,19 +1,14 @@
 module pwm(
     input clk,
     input reset,
-    input [7:0] threshold,
-    input [7:0] max,
-    output reg pwm
+    input [WIDTH-1:0] threshold,
+    input [WIDTH-1:0] max,
+    output pwm
 );
-reg [7:0] counter;
+parameter WIDTH = 16;
+reg [WIDTH-1:0] counter;
 
-always @ (posedge clk)
-begin
-    if (counter < threshold )
-        pwm <= 1;
-    else
-        pwm <= 0;
-end
+assign pwm = counter > threshold;
 
 always @ (posedge clk or negedge reset )
 begin
